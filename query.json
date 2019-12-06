@@ -1,0 +1,66 @@
+GET /dotcom-v4-cms-logs/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "level": "error"
+          }
+        },
+        {
+          "match": {
+            "env": "dotcom-v4-prod"
+          }
+        },
+        {
+          "match": {
+            "kubernetes.pod_name": "dotcom-search-worker"
+          }
+        },
+      {
+        "range": {
+      "@timestamp": {
+        "gte": "14-11-2019",
+        "lte": "16-11-2019",
+        "format": "dd-MM-yyyy"
+      }
+        }
+      }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "data.stack": "IndexManagerError"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "match_phrase": {
+            "data.stack": "DocumentManagerError"
+          }
+        },
+        {
+          "match_phrase": {
+          "data.stack": "Request Timeout after"
+        }
+        },
+        {
+          "match_phrase": {
+            "data.stack": "AemApiStatusErro"
+          }
+        }
+      ]
+      //"must_not": {
+      //  "terms": {
+      //      "data.stack": [
+      //        "DocumentManagerError",
+      //        "Request Timeout after",
+      //        "AemApiStatusErro"
+      //        ]
+      //      }
+      //  }
+    }
+  }
+}
